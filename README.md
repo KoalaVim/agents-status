@@ -1,3 +1,6 @@
+> [!WARNING]
+> This project is a **work in progress**. APIs, configuration formats, and behavior may change without notice.
+
 # agents-status
 
 Aggregates real-time status from AI coding agents (Claude Code, Cursor CLI, Codex CLI) into a single server, then surfaces that status through tmux window colors, desktop notifications, and statusbar integrations.
