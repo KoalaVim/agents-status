@@ -1,0 +1,13 @@
+# Cursor CLI Wrapper Config
+#
+# Place this file at:
+#   ~/.config/cursor-cli-wrapper/config.toml
+
+[hooks]
+# Shell command to run when the Cursor agent presents a question prompt
+# (the "↑/↓ option · ←/→ question · Space select · Enter next/submit · Esc to skip" bar).
+# on-question = "notify-send 'Cursor' 'Question waiting'"
+# Shell command to run when Enter is pressed to submit a question answer.
+# on-question-submit = "notify-send 'Cursor' 'Question submitted'"
+# Cooldown in milliseconds before on-question can fire again (default: 500)
+# on-question-cooldown-ms = 500

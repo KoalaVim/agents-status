@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+
+AGENTS_STATUS_DIR="$(cd "$(dirname "$0")/../core" && pwd)"
+
+( . "$AGENTS_STATUS_DIR/helpers.sh"
+  ensure_server
+  send_event cursor IDLE ) >/dev/null 2>&1
+
+BIN="${CURSOR_CLI_WRAPPER_BIN:-cursor-cli-wrapper}"
+"$BIN" "$@"

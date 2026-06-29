@@ -1,0 +1,19 @@
+# agents-status server configuration
+#
+# Place this file at:
+#   ~/.config/agents-status/config.toml
+# Or set AGENTS_STATUS_CONFIG to point to it.
+
+[notification]
+# Command used to send desktop notifications (default: notify-send).
+# On macOS you might use: "terminal-notifier" or a wrapper around osascript.
+# command = "notify-send"
+
+[post-event]
+# Shell commands to run after every state change (tmux option writes).
+# Each command is spawned asynchronously and must not block.
+# $AGENTS_STATUS_DIR is injected by the server (points to core/).
+# commands = [
+#     "$AGENTS_STATUS_DIR/../tmux/scripts/refresh_dim_colors.sh",
+#     "hyprctl dispatch exec $AGENTS_STATUS_DIR/../statusbar/hyprland/RenameWorkspaces.py",
+# ]

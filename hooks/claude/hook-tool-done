@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+
+input=$(cat 2>/dev/null)
+
+(
+    export CLAUDE_TRANSCRIPT_PATH="$(printf '%s' "$input" | grep -o '"transcript_path"[[:space:]]*:[[:space:]]*"[^"]*"' | sed 's/.*"\([^"]*\)"$/\1/')"
+    _dir="$(cd "$(dirname "$0")/../../core" && pwd)"
+    . "$_dir/helpers.sh"
+    send_event claude INPROGRESS
+) </dev/null >/dev/null 2>&1 &
