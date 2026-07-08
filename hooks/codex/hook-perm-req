@@ -5,7 +5,7 @@ input=$(cat 2>/dev/null)
 
 (
     export CODEX_TRANSCRIPT_PATH="$(printf '%s' "$input" | grep -o '"transcript_path"[[:space:]]*:[[:space:]]*"[^"]*"' | sed 's/.*"\([^"]*\)"$/\1/')"
-    _dir="$(cd "$(dirname "$0")/../../core" && pwd)"
-    . "$_dir/helpers.sh"
+    AGENTS_STATUS_DIR="$(cd "$(dirname "$0")/../../core" && pwd)"
+    . "$AGENTS_STATUS_DIR/helpers.sh"
     send_event codex WAITING "Requires Permission"
 ) </dev/null >/dev/null 2>&1 &

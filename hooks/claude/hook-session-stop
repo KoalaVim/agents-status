@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
 (
-    _dir="$(cd "$(dirname "$0")/../../core" && pwd)"
-    . "$_dir/helpers.sh"
+    AGENTS_STATUS_DIR="$(cd "$(dirname "$0")/../../core" && pwd)"
+    . "$AGENTS_STATUS_DIR/helpers.sh"
     send_event claude "" "" clear
 ) </dev/null >/dev/null 2>&1 &
