@@ -1,6 +1,0 @@
-Metadata-Version: 2.4
-Name: agents-status
-Version: 0.1.0
-Summary: Agent status aggregation server
-Requires-Python: >=3.9
-Requires-Dist: tomli>=1.0; python_version < "3.11"

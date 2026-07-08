@@ -1,9 +1,0 @@
-README.md
-pyproject.toml
-server.py
-agents_status.egg-info/PKG-INFO
-agents_status.egg-info/SOURCES.txt
-agents_status.egg-info/dependency_links.txt
-agents_status.egg-info/entry_points.txt
-agents_status.egg-info/requires.txt
-agents_status.egg-info/top_level.txt
