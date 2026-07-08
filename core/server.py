@@ -108,7 +108,7 @@ def _run(cmd):
 def _build_notify_cmd():
     """Return the base notification command from config or default to notify-send."""
     notify_cfg = _config.get("notification", {})
-    cmd_str = notify_cfg.get("command", "notify-send")
+    cmd_str = os.path.expandvars(notify_cfg.get("command", "notify-send"))
     return cmd_str.split()
 
 
