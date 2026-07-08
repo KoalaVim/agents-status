@@ -1,6 +1,8 @@
 #!/usr/bin/env sh
 
-AGENTS_STATUS_DIR="$(cd "$(dirname "$0")/../core" && pwd)"
+_self="$0"
+[ -L "$_self" ] && _self="$(readlink "$_self")"
+AGENTS_STATUS_DIR="$(cd "$(dirname "$_self")/../core" && pwd)"
 
 ( . "$AGENTS_STATUS_DIR/helpers.sh"
   ensure_server

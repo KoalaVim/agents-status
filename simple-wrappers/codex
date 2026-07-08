@@ -9,7 +9,9 @@
 # This dir is on PATH ahead of ~/.local/bin, so it shadows the real `codex`.
 # Resolve the next `codex` on PATH (skipping this wrapper) to avoid recursion.
 
-self_dir=$(CDPATH= cd -- "$(dirname -- "$0")" 2>/dev/null && pwd)
+_self="$0"
+[ -L "$_self" ] && _self="$(readlink "$_self")"
+self_dir=$(CDPATH= cd -- "$(dirname -- "$_self")" 2>/dev/null && pwd)
 AGENTS_STATUS_DIR="$(cd "$self_dir/../core" && pwd)"
 real=""
 IFS=:
