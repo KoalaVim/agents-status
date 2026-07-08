@@ -23,11 +23,20 @@ except OSError:
 fi
 
 # Spawn the server fully detached.
-if command -v setsid >/dev/null 2>&1; then
-    setsid python3 "$SERVER" </dev/null >>"$LOG" 2>&1 &
+if command -v agents-status-server >/dev/null 2>&1; then
+    # Installed via uv tool install
+    if command -v setsid >/dev/null 2>&1; then
+        setsid agents-status-server </dev/null >>"$LOG" 2>&1 &
+    else
+        (agents-status-server </dev/null >>"$LOG" 2>&1 &)
+    fi
 else
-    # macOS: no setsid — use a subshell that detaches from the process group.
-    (python3 "$SERVER" </dev/null >>"$LOG" 2>&1 &)
+    # Fallback: run server.py directly
+    if command -v setsid >/dev/null 2>&1; then
+        setsid python3 "$SERVER" </dev/null >>"$LOG" 2>&1 &
+    else
+        (python3 "$SERVER" </dev/null >>"$LOG" 2>&1 &)
+    fi
 fi
 
 # Give it a moment to bind the socket so the first event isn't dropped.

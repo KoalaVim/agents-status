@@ -26,23 +26,48 @@ Aggregates real-time status from AI coding agents (Claude Code, Cursor CLI, Code
 
 ## Install
 
-Each module installs independently. The installer patches your tool configs in place (with backups).
+Clone the repo (convention: `~/agents-status`):
 
 ```sh
-# 1. Core server (required)
-./install.sh core
+git clone git@github.com:KoalaVim/agents-status.git ~/agents-status
+```
 
-# 2. Hooks (pick tools you use)
+### Core server
+
+The server is a Python package. Install with [uv](https://docs.astral.sh/uv/) (recommended) or fallback to `install.sh`:
+
+```sh
+# Preferred: installs `agents-status-server` command + tomli dependency
+uv tool install ~/agents-status/core
+
+# Alternative: just creates config dir (requires tomli installed manually for Python <3.11)
+./install.sh core
+```
+
+### Hooks
+
+The installer patches your tool configs in place (with backups):
+
+```sh
 ./install.sh hooks claude
 ./install.sh hooks cursor
 ./install.sh hooks codex
 ./install.sh hooks all        # all of the above
+```
 
-# 3. Simple wrappers (optional, per tool)
-./install.sh wrapper codex
-./install.sh wrapper cursor
+### Simple wrappers
 
-# 4. Cursor PTY wrapper (optional)
+Add `~/agents-status/simple-wrappers` to your PATH (before `~/.local/bin`):
+
+```sh
+export PATH=~/agents-status/simple-wrappers:$PATH
+```
+
+This provides `cursor-agent` and `codex` wrappers that ensure the server is running and clear status on exit.
+
+### Cursor PTY wrapper (optional)
+
+```sh
 ./install.sh cursor-cli-wrapper
 ```
 
