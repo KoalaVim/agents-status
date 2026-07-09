@@ -6,7 +6,7 @@ Entry point for coding agents working in this repo.
 
 - User-facing usage: `README.md`
 - System design and diagrams: `SYSTEM_DESIGN.md`
-- Per-package docs: `core/README.md`, `hooks/*/README.md`, `simple-wrappers/README.md`, `advanced-wrappers/cursor-agent/README.md`, `tmux/README.md`, `statusbar/README.md`
+- Per-package docs: `core/README.md`, `hooks/*/README.md`, `simple-wrappers/README.md`, `advanced-wrappers/cursor-agent/README.md`, `tmux/README.md`, `statusbar/AGENTS.md`, `statusbar/README.md`
 - Future work: `statusbar/TODO.md`
 
 ## What This Repo Is
