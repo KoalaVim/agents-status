@@ -92,8 +92,20 @@ slack = ""                   # Slack window
 
 ```toml
 [statusbar.sketchybar]
-space_item_prefix = "space"    # Prefix for sketchybar space item names
+space_item_prefix = "space"                                        # Prefix for sketchybar space item names
+label_template = "{id} {agent_icon} {tmux_sessions} [{window_count}]"  # Workspace label template
 ```
+
+#### Template variables
+
+| Variable | Source | Description |
+|----------|--------|-------------|
+| `{id}` | aerospace.sh | Workspace number |
+| `{agent_icon}` | agents-status | Agent status icon (from tmux) |
+| `{tmux_sessions}` | agents-status | Tmux session names joined with `\|` |
+| `{app_icons}` | agents-status | Browser/Slack icons |
+| `{agent_label}` | agents-status | Full computed display name |
+| `{window_count}` | aerospace.sh | Live window count from aerospace |
 
 ## Requirements
 

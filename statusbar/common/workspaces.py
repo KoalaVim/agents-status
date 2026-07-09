@@ -75,9 +75,31 @@ def _format_tmux_entry(
     return display
 
 
+@dataclass
+class _WorkspaceParts:
+    """Structured parts of a workspace label for template rendering."""
+    display_name: str
+    agent_icon: str = ""
+    tmux_sessions: str = ""
+    app_icons: str = ""
+
+
+def _format_tmux_session_name(
+    entry: _TmuxEntry, prefix: str, is_active: bool, max_len: int,
+) -> str:
+    """Format just the session name (no icons) with prefix dedup and truncation."""
+    if is_active or not entry.raw_name.startswith(prefix):
+        name = entry.raw_name
+    else:
+        name = entry.raw_name[len(prefix):] or entry.raw_name
+    if len(name) > max_len:
+        name = name[:max_len] + "…"
+    return name
+
+
 def _format_workspace(
     acc: _WorkspaceAcc, icons: IconMaps, config: StatusbarConfig, prefix: str,
-) -> str:
+) -> _WorkspaceParts:
     features = config.features
     max_len = config.naming.max_length
 
@@ -86,38 +108,58 @@ def _format_workspace(
     entries = main_entries or viewer_entries
 
     if entries:
-        app_icons: list[str] = []
+        app_icon_list: list[str] = []
         if acc.has_slack and features.slack_icon:
-            app_icons.append(icons.slack)
+            app_icon_list.append(icons.slack)
         if acc.has_browser and features.browser_icon:
-            app_icons.append(icons.browser)
-        icons_prefix = " ".join(app_icons) + " " if app_icons else ""
+            app_icon_list.append(icons.browser)
+        app_icons_str = " ".join(app_icon_list)
+        icons_prefix = app_icons_str + " " if app_icon_list else ""
+
         formatted = [
             _format_tmux_entry(e, prefix, acc.is_active, max_len)
             for e in entries
         ]
-        return f"{acc.id} {icons_prefix}{'|'.join(formatted)}"
+        display_name = f"{acc.id} {icons_prefix}{'|'.join(formatted)}"
 
-    # Slack-only workspace
+        session_names = [
+            _format_tmux_session_name(e, prefix, acc.is_active, max_len)
+            for e in entries
+        ]
+        agent_icon = entries[0].agent_icon if len(entries) == 1 else ""
+        if not agent_icon:
+            status = highest_priority_status(acc.agent_statuses)
+            agent_icon = icons.agent_status.get(status, icons.tmux) if status else ""
+
+        return _WorkspaceParts(
+            display_name=display_name,
+            agent_icon=agent_icon,
+            tmux_sessions="|".join(session_names),
+            app_icons=app_icons_str,
+        )
+
     if acc.has_slack and not acc.has_browser and acc.all_windows_slack:
-        if features.slack_icon:
-            return f"{acc.id} {icons.slack} Slack"
-        return f"{acc.id} Slack"
+        slack_icon = icons.slack if features.slack_icon else ""
+        label = f"{acc.id} {slack_icon} Slack" if slack_icon else f"{acc.id} Slack"
+        return _WorkspaceParts(display_name=label, app_icons=slack_icon)
 
     if not acc.fallback_title:
-        return f"{acc.id}"
+        return _WorkspaceParts(display_name=f"{acc.id}")
 
-    # Fallback to best window title
-    app_icons = []
+    app_icon_list = []
     if acc.has_slack and features.slack_icon:
-        app_icons.append(icons.slack)
+        app_icon_list.append(icons.slack)
     if acc.has_browser and features.browser_icon:
-        app_icons.append(icons.browser)
-    icons_prefix = " ".join(app_icons) + " " if app_icons else ""
+        app_icon_list.append(icons.browser)
+    app_icons_str = " ".join(app_icon_list)
+    icons_prefix = app_icons_str + " " if app_icon_list else ""
     title = acc.fallback_title
     if len(title) > max_len:
         title = title[:max_len] + "…"
-    return f"{acc.id} {icons_prefix}{title}"
+    return _WorkspaceParts(
+        display_name=f"{acc.id} {icons_prefix}{title}",
+        app_icons=app_icons_str,
+    )
 
 
 def build_workspaces(
@@ -204,13 +246,16 @@ def build_workspaces(
 
     results: list[WorkspaceInfo] = []
     for acc in sorted(accumulators, key=lambda a: a.id):
-        display_name = _format_workspace(acc, icons, config, prefix)
+        parts = _format_workspace(acc, icons, config, prefix)
         status = highest_priority_status(acc.agent_statuses)
         results.append(WorkspaceInfo(
             id=acc.id,
-            display_name=display_name,
+            display_name=parts.display_name,
             agent_status=status,
             is_active=acc.is_active,
+            agent_icon=parts.agent_icon,
+            tmux_sessions=parts.tmux_sessions,
+            app_icons=parts.app_icons,
         ))
 
     return results
