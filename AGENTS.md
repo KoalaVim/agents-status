@@ -21,7 +21,7 @@ hooks/             Per-tool hook scripts (claude/, cursor/, codex/)
 simple-wrappers/   Shell wrappers for idle/stop lifecycle
 advanced-wrappers/ Rust PTY wrapper for Cursor AskQuestion detection
 tmux/              TPM-compatible tmux plugin
-statusbar/         Hyprland virtual desktop renaming
+statusbar/         Desktop statusbar integrations (Hyprland, sketchybar)
 install.sh         Modular installer
 ```
 

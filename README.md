@@ -14,7 +14,7 @@ Aggregates real-time status from AI coding agents (Claude Code, Cursor CLI, Code
 | [`simple-wrappers/`](simple-wrappers/) | Shell wrappers that add IDLE-on-launch and clear-on-exit for tools missing those hooks |
 | [`advanced-wrappers/cursor-agent/`](advanced-wrappers/cursor-agent/) | Rust PTY wrapper that detects Cursor's AskQuestion interactive prompts |
 | [`tmux/`](tmux/) | TPM-compatible tmux plugin for status-colored window names |
-| [`statusbar/`](statusbar/) | Hyprland virtual desktop renaming by agent status |
+| [`statusbar/`](statusbar/) | Desktop statusbar integration (Hyprland, sketchybar) |
 
 ## Supported Tools
 
@@ -111,7 +111,7 @@ See [`tmux/README.md`](tmux/README.md) for configuration options.
 
 ## Statusbar
 
-Wire the Hyprland integration as a post-event hook in your core config. See [`statusbar/README.md`](statusbar/README.md).
+Add the statusbar integration as a post-event hook. Supports Hyprland (Linux) and AeroSpace + sketchybar (macOS). See [`statusbar/README.md`](statusbar/README.md) for configuration.
 
 ## How It Works
 
