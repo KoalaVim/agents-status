@@ -32,7 +32,7 @@ class SketchyBar:
             id_prefix = f"{ws.id} "
             if label.startswith(id_prefix):
                 label = label[len(id_prefix):]
-            cmd.extend(["--set", item, f"label={label}", f"icon.color={color}"])
+            cmd.extend(["--set", item, f"label={label}", f"label.color={color}"])
 
         try:
             subprocess.run(cmd, capture_output=True, text=True, timeout=5)
