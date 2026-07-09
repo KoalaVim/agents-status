@@ -45,8 +45,23 @@ class IconsConfig:
 
 
 @dataclass
+class SketchybarColorsConfig:
+    idle_focused: str = "0xff0be600"
+    idle_unfocused: str = "0xff16610a"
+    inprogress_focused: str = "0xfffa7900"
+    inprogress_unfocused: str = "0xff61380a"
+    waiting_focused: str = "0xffc80000"
+    waiting_unfocused: str = "0xff6f0c0c"
+    done_focused: str = "0xff1e88ff"
+    done_unfocused: str = "0xff0c4583"
+    text_focused: str = "0xff1e1e1e"
+    text_unfocused: str = "0xff000000"
+
+
+@dataclass
 class SketchybarConfig:
     space_item_prefix: str = "space"
+    colors: SketchybarColorsConfig = field(default_factory=SketchybarColorsConfig)
 
 
 @dataclass
@@ -99,7 +114,12 @@ def load_statusbar_config() -> StatusbarConfig:
     features = _build_dataclass(FeaturesConfig, raw.pop("features", {}))
     naming = _build_dataclass(NamingConfig, raw.pop("naming", {}))
     icons = _build_dataclass(IconsConfig, raw.pop("icons", {}))
-    sketchybar = _build_dataclass(SketchybarConfig, raw.pop("sketchybar", {}))
+    sketchybar_raw = raw.pop("sketchybar", {})
+    sketchybar_colors = _build_dataclass(
+        SketchybarColorsConfig, sketchybar_raw.pop("colors", {}),
+    )
+    sketchybar_obj = _build_dataclass(SketchybarConfig, sketchybar_raw)
+    sketchybar_obj.colors = sketchybar_colors  # type: ignore[attr-defined]
 
     if not provider or not bar:
         detected_provider, detected_bar = _auto_detect()
@@ -112,5 +132,5 @@ def load_statusbar_config() -> StatusbarConfig:
         features=features,  # type: ignore[arg-type]
         naming=naming,  # type: ignore[arg-type]
         icons=icons,  # type: ignore[arg-type]
-        sketchybar=sketchybar,  # type: ignore[arg-type]
+        sketchybar=sketchybar_obj,  # type: ignore[arg-type]
     )
