@@ -61,7 +61,7 @@ class SketchybarColorsConfig:
 @dataclass
 class SketchybarConfig:
     space_item_prefix: str = "space"
-    label_template: str = "{id} {agent_icon} {tmux_sessions} [{window_count}]"
+    label_template: str = "{agent_icon} {tmux_sessions} [{window_count}]"
     colors: SketchybarColorsConfig = field(default_factory=SketchybarColorsConfig)
 
 
