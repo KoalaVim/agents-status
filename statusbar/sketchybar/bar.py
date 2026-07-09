@@ -28,7 +28,11 @@ class SketchyBar:
         for ws in workspaces:
             item = f"{self._prefix}.{ws.id}"
             color = STATUS_COLORS.get(ws.agent_status, DEFAULT_COLOR)
-            cmd.extend(["--set", item, f"label={ws.display_name}", f"icon.color={color}"])
+            label = ws.display_name
+            id_prefix = f"{ws.id} "
+            if label.startswith(id_prefix):
+                label = label[len(id_prefix):]
+            cmd.extend(["--set", item, f"label={label}", f"icon.color={color}"])
 
         try:
             subprocess.run(cmd, capture_output=True, text=True, timeout=5)
