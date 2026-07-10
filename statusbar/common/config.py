@@ -46,14 +46,14 @@ class IconsConfig:
 
 @dataclass
 class SketchybarColorsConfig:
-    idle_focused: str = "0xff0be600"
-    idle_unfocused: str = "0xff16610a"
+    idle_focused: str = "0xff1e88ff"
+    idle_unfocused: str = "0xff0c4583"
     inprogress_focused: str = "0xfffa7900"
     inprogress_unfocused: str = "0xff61380a"
     waiting_focused: str = "0xffc80000"
     waiting_unfocused: str = "0xff6f0c0c"
-    done_focused: str = "0xff1e88ff"
-    done_unfocused: str = "0xff0c4583"
+    done_focused: str = "0xff0be600"
+    done_unfocused: str = "0xff16610a"
     text_focused: str = "0xff1e1e1e"
     text_unfocused: str = "0xff000000"
 

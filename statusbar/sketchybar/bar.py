@@ -12,8 +12,8 @@ from statusbar.common.types import WorkspaceInfo
 STATUS_COLORS = {
     "WAITING": "0xffcf1313",
     "INPROGRESS": "0xfffa7900",
-    "DONE": "0xff1e88ff",
-    "IDLE": "0xff15c70c",
+    "DONE": "0xff15c70c",
+    "IDLE": "0xff1e88ff",
 }
 DEFAULT_COLOR = "0xffffffff"
 
