@@ -6,15 +6,14 @@ import os
 import subprocess
 import sys
 
-from statusbar.common.config import SketchybarColorsConfig, SketchybarConfig
+from statusbar.common.config import (
+    ColorsConfig,
+    SketchybarColorsConfig,
+    SketchybarConfig,
+    _hex_to_sketchybar,
+)
 from statusbar.common.types import WorkspaceInfo
 
-STATUS_COLORS = {
-    "WAITING": "0xffcf1313",
-    "INPROGRESS": "0xfffa7900",
-    "DONE": "0xff15c70c",
-    "IDLE": "0xff1e88ff",
-}
 DEFAULT_COLOR = "0xffffffff"
 
 SENTINEL_PATH = f"/tmp/agent-status-bg-{os.getuid()}"
@@ -33,12 +32,16 @@ def _bg_colors(
 
 
 class SketchyBar:
-    def __init__(self, config: SketchybarConfig) -> None:
+    def __init__(self, config: SketchybarConfig, colors: ColorsConfig | None = None) -> None:
         self._prefix = config.space_item_prefix
         self._template = config.label_template
         self._bg_colors = _bg_colors(config.colors)
         self._text_focused = config.colors.text_focused
         self._text_unfocused = config.colors.text_unfocused
+        resolved = (colors or ColorsConfig()).resolved()
+        self._status_colors = {
+            k.upper(): _hex_to_sketchybar(v) for k, v in resolved.items()
+        }
 
     def apply(self, workspaces: list[WorkspaceInfo]) -> None:
         if not workspaces:

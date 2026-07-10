@@ -41,7 +41,7 @@ def _create_bar(name: str, config):
         return HyprlandBar()
     if name == "sketchybar":
         from statusbar.sketchybar.bar import SketchyBar
-        return SketchyBar(config.sketchybar)
+        return SketchyBar(config.sketchybar, config.colors)
     print(f"Unknown bar: {name!r}. Supported: hyprland, sketchybar",
           file=sys.stderr)
     sys.exit(1)

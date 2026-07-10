@@ -73,6 +73,14 @@ def _load_config():
 
 
 _config = _load_config()
+_STATUS_COLORS = {
+    "WAITING": "#cf1313",
+    "INPROGRESS": "#fa7900",
+    "DONE": "#15c70c",
+    "IDLE": "#1e88ff",
+}
+_STATUS_COLORS.update({k.upper(): v for k, v in _config.get("colors", {}).items()
+                        if k.upper() in _STATUS_COLORS})
 _server_dir = os.path.dirname(os.path.abspath(__file__))
 _subprocess_env = {**os.environ, "AGENTS_STATUS_DIR": _server_dir}
 
@@ -194,12 +202,7 @@ def apply_state(instance_id, state):
                 _run(["tmux", "setw", "-u", "-t", target, "@window_color"])
             if status:
                 _run(["tmux", "set-option", "-wq", "-t", target, "@ai-agent-status", status])
-                color = {
-                    "WAITING": "#cf1313",
-                    "INPROGRESS": "#fa7900",
-                    "DONE": "#1e88ff",
-                    "IDLE": "#15c70c",
-                }.get(status)
+                color = _STATUS_COLORS.get(status)
                 if color:
                     _run(["tmux", "setw", "-t", target, "@window_color", color])
                 else:

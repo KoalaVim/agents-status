@@ -44,18 +44,73 @@ class IconsConfig:
     slack: str = "\ue8a4"
 
 
+DEFAULT_STATUS_COLORS = {
+    "idle": "#1e88ff",
+    "inprogress": "#fa7900",
+    "waiting": "#cf1313",
+    "done": "#15c70c",
+}
+
+# Dimmed unfocused variants of the default bright colors
+_DEFAULT_UNFOCUSED = {
+    "idle": "#0c4583",
+    "inprogress": "#61380a",
+    "waiting": "#6f0c0c",
+    "done": "#16610a",
+}
+
+
+def _hex_to_sketchybar(hex_color: str) -> str:
+    """Convert #rrggbb to 0xffrrggbb."""
+    return "0xff" + hex_color.lstrip("#")
+
+
+def _dim_color(hex_color: str, factor: float = 0.4) -> str:
+    """Produce a dimmed variant of a #rrggbb color."""
+    h = hex_color.lstrip("#")
+    r, g, b = int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
+    r, g, b = int(r * factor), int(g * factor), int(b * factor)
+    return f"#{r:02x}{g:02x}{b:02x}"
+
+
+@dataclass
+class ColorsConfig:
+    idle: str = ""
+    inprogress: str = ""
+    waiting: str = ""
+    done: str = ""
+
+    def resolved(self) -> dict[str, str]:
+        """Return status->hex mapping with defaults filled in."""
+        return {
+            k: getattr(self, k) or DEFAULT_STATUS_COLORS[k]
+            for k in DEFAULT_STATUS_COLORS
+        }
+
+
 @dataclass
 class SketchybarColorsConfig:
-    idle_focused: str = "0xff1e88ff"
-    idle_unfocused: str = "0xff0c4583"
-    inprogress_focused: str = "0xfffa7900"
-    inprogress_unfocused: str = "0xff61380a"
-    waiting_focused: str = "0xffc80000"
-    waiting_unfocused: str = "0xff6f0c0c"
-    done_focused: str = "0xff0be600"
-    done_unfocused: str = "0xff16610a"
+    idle_focused: str = ""
+    idle_unfocused: str = ""
+    inprogress_focused: str = ""
+    inprogress_unfocused: str = ""
+    waiting_focused: str = ""
+    waiting_unfocused: str = ""
+    done_focused: str = ""
+    done_unfocused: str = ""
     text_focused: str = "0xff1e1e1e"
     text_unfocused: str = "0xff000000"
+
+    def apply_global_colors(self, colors: dict[str, str]) -> None:
+        """Fill in empty slots from global [colors], converting to sketchybar format."""
+        for status, hex_color in colors.items():
+            focused_attr = f"{status}_focused"
+            unfocused_attr = f"{status}_unfocused"
+            if not getattr(self, focused_attr):
+                setattr(self, focused_attr, _hex_to_sketchybar(hex_color))
+            if not getattr(self, unfocused_attr):
+                unfocused_hex = _DEFAULT_UNFOCUSED.get(status) or _dim_color(hex_color)
+                setattr(self, unfocused_attr, _hex_to_sketchybar(unfocused_hex))
 
 
 @dataclass
@@ -69,6 +124,7 @@ class SketchybarConfig:
 class StatusbarConfig:
     workspaces_provider: str = ""
     bar: str = ""
+    colors: ColorsConfig = field(default_factory=ColorsConfig)
     features: FeaturesConfig = field(default_factory=FeaturesConfig)
     naming: NamingConfig = field(default_factory=NamingConfig)
     icons: IconsConfig = field(default_factory=IconsConfig)
@@ -95,7 +151,7 @@ def load_statusbar_config() -> StatusbarConfig:
     path = os.environ.get("AGENTS_STATUS_CONFIG") or os.path.expanduser(
         "~/.config/agents-status/config.toml"
     )
-    raw: dict = {}
+    full_config: dict = {}
     if os.path.isfile(path):
         if tomllib is None:
             print(
@@ -105,10 +161,13 @@ def load_statusbar_config() -> StatusbarConfig:
         else:
             try:
                 with open(path, "rb") as f:
-                    raw = tomllib.load(f).get("statusbar", {})
+                    full_config = tomllib.load(f)
             except Exception as e:
                 print(f"statusbar: failed to load {path}: {e}", file=sys.stderr)
 
+    global_colors = _build_dataclass(ColorsConfig, full_config.get("colors", {}))
+
+    raw = full_config.get("statusbar", {})
     provider = raw.pop("workspaces_provider", "")
     bar = raw.pop("bar", "")
 
@@ -119,6 +178,7 @@ def load_statusbar_config() -> StatusbarConfig:
     sketchybar_colors = _build_dataclass(
         SketchybarColorsConfig, sketchybar_raw.pop("colors", {}),
     )
+    sketchybar_colors.apply_global_colors(global_colors.resolved())  # type: ignore[union-attr]
     sketchybar_obj = _build_dataclass(SketchybarConfig, sketchybar_raw)
     sketchybar_obj.colors = sketchybar_colors  # type: ignore[attr-defined]
 
@@ -130,6 +190,7 @@ def load_statusbar_config() -> StatusbarConfig:
     return StatusbarConfig(
         workspaces_provider=provider,
         bar=bar,
+        colors=global_colors,  # type: ignore[arg-type]
         features=features,  # type: ignore[arg-type]
         naming=naming,  # type: ignore[arg-type]
         icons=icons,  # type: ignore[arg-type]
