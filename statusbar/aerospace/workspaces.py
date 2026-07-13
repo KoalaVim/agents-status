@@ -28,6 +28,15 @@ def _run_aerospace(args: list[str]) -> str:
 
 
 class AerospaceWorkspacesProvider:
+    @staticmethod
+    def _ws_group(ws_id: str) -> int | None:
+        """Extract group number from a workspace ID (e.g. '2b' -> 2, '1' -> 1)."""
+        group_str = ws_id.rstrip("bc")
+        try:
+            return int(group_str)
+        except ValueError:
+            return None
+
     def get_workspaces(self) -> list[WorkspaceData]:
         all_ws = _run_aerospace(["list-workspaces", "--all"]).strip()
         if not all_ws:
@@ -35,35 +44,40 @@ class AerospaceWorkspacesProvider:
         ws_ids = [line.strip() for line in all_ws.splitlines() if line.strip()]
 
         focused = _run_aerospace(["list-workspaces", "--focused"]).strip()
+        focused_group = self._ws_group(focused)
 
         windows_output = _run_aerospace([
             "list-windows", "--all",
             "--format", "%{workspace}|%{app-name}|%{window-title}",
         ]).strip()
 
-        # Group windows by workspace
-        ws_windows: dict[str, list[WindowInfo]] = {}
+        # Group windows by workspace group number (aggregate sub-workspaces)
+        group_windows: dict[int, list[WindowInfo]] = {}
         for line in windows_output.splitlines():
             parts = line.split("|", 2)
             if len(parts) != 3:
                 continue
             ws_id, app_name, title = parts
-            ws_id = ws_id.strip()
-            ws_windows.setdefault(ws_id, []).append(
+            group = self._ws_group(ws_id.strip())
+            if group is None:
+                continue
+            group_windows.setdefault(group, []).append(
                 WindowInfo(title=title.strip(), app_class=app_name.strip().lower())
             )
 
-        results: list[WorkspaceData] = []
+        # Collect unique groups
+        seen_groups: set[int] = set()
         for ws_id in ws_ids:
-            try:
-                numeric_id = int(ws_id)
-            except ValueError:
-                print(f"Skipping non-numeric workspace ID: {ws_id!r}", file=sys.stderr)
-                continue
+            group = self._ws_group(ws_id)
+            if group is not None:
+                seen_groups.add(group)
+
+        results: list[WorkspaceData] = []
+        for group in sorted(seen_groups):
             results.append(WorkspaceData(
-                id=numeric_id,
-                windows=ws_windows.get(ws_id, []),
-                is_active=ws_id == focused,
+                id=group,
+                windows=group_windows.get(group, []),
+                is_active=group == focused_group,
             ))
         return results
 
