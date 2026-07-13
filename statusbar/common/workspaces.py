@@ -11,6 +11,8 @@ from statusbar.common.types import WorkspaceInfo, WorkspacesProvider
 BROWSER_CLASSES = frozenset({
     "firefox", "firefox_firefox", "chromium", "google-chrome",
     "brave-browser", "vivaldi", "zen", "zen-browser",
+    # macOS app names (aerospace uses spaces, not hyphens)
+    "google chrome", "brave browser", "arc",
 })
 SLACK_CLASSES = frozenset({"slack"})
 
