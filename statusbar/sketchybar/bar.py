@@ -47,12 +47,9 @@ class SketchyBar:
         if not workspaces:
             return
 
-        cmd: list[str] = ["sketchybar"]
         sentinel_entries: list[dict] = []
 
         for ws in workspaces:
-            item = f"{self._prefix}.{ws.id}"
-
             label = ws.display_name
             id_prefix = f"{ws.id} "
             if label.startswith(id_prefix):
@@ -70,14 +67,6 @@ class SketchyBar:
 
             if bg_pair:
                 focused_bg, unfocused_bg = bg_pair
-                bg_color = focused_bg if ws.is_active else unfocused_bg
-                text_color = self._text_focused if ws.is_active else self._text_unfocused
-                cmd.extend([
-                    "--set", item,
-                    f"icon.color={text_color}",
-                    f"background.color={bg_color}",
-                    "background.drawing=on",
-                ])
                 entry.update({
                     "bg_focused": focused_bg,
                     "bg_unfocused": unfocused_bg,
@@ -85,10 +74,6 @@ class SketchyBar:
                     "text_unfocused": self._text_unfocused,
                 })
             else:
-                cmd.extend([
-                    "--set", item,
-                    "background.drawing=off",
-                ])
                 entry.update({
                     "bg_focused": "",
                     "bg_unfocused": "",
@@ -99,14 +84,16 @@ class SketchyBar:
             sentinel_entries.append(entry)
 
         self._write_sentinel(sentinel_entries)
+        self._trigger_workspace_events(workspaces)
 
-        if len(cmd) > 1:
-            try:
-                subprocess.run(cmd, capture_output=True, text=True, timeout=5)
-            except subprocess.TimeoutExpired:
-                print("sketchybar update timed out", file=sys.stderr)
-            except FileNotFoundError:
-                print("sketchybar not found", file=sys.stderr)
+    def _trigger_workspace_events(self, workspaces: list[WorkspaceInfo]) -> None:
+        cmd: list[str] = ["sketchybar"]
+        for ws in workspaces:
+            cmd.extend(["--trigger", f"aerospace_workspace_change_{ws.id}"])
+        try:
+            subprocess.run(cmd, capture_output=True, text=True, timeout=5)
+        except (subprocess.TimeoutExpired, FileNotFoundError):
+            pass
 
     def _write_sentinel(self, entries: list[dict]) -> None:
         try:
