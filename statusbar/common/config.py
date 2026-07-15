@@ -45,18 +45,18 @@ class IconsConfig:
 
 
 DEFAULT_STATUS_COLORS = {
-    "idle": "#1e88ff",
+    "idle": "#15c70c",
     "inprogress": "#fa7900",
     "waiting": "#cf1313",
-    "done": "#15c70c",
+    "done": "#1e88ff",
 }
 
 # Dimmed unfocused variants of the default bright colors
 _DEFAULT_UNFOCUSED = {
-    "idle": "#0c4583",
+    "idle": "#16610a",
     "inprogress": "#61380a",
     "waiting": "#6f0c0c",
-    "done": "#16610a",
+    "done": "#0c4583",
 }
 
 
