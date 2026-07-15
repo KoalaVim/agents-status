@@ -76,8 +76,8 @@ _config = _load_config()
 _STATUS_COLORS = {
     "WAITING": "#cf1313",
     "INPROGRESS": "#fa7900",
-    "DONE": "#15c70c",
-    "IDLE": "#1e88ff",
+    "DONE": "#1e88ff",
+    "IDLE": "#15c70c",
 }
 _STATUS_COLORS.update({k.upper(): v for k, v in _config.get("colors", {}).items()
                         if k.upper() in _STATUS_COLORS})
