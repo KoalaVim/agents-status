@@ -33,6 +33,7 @@ class WorkspaceInfo:
     agent_status: str
     is_active: bool = False
     agent_icon: str = ""
+    monitor_icon: str = ""
     tmux_sessions: str = ""
     app_icons: str = ""
 

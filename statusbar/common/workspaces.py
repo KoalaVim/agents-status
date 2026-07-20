@@ -82,6 +82,7 @@ class _WorkspaceParts:
     """Structured parts of a workspace label for template rendering."""
     display_name: str
     agent_icon: str = ""
+    monitor_icon: str = ""
     tmux_sessions: str = ""
     app_icons: str = ""
 
@@ -133,9 +134,13 @@ def _format_workspace(
             status = highest_priority_status(acc.agent_statuses)
             agent_icon = icons.agent_status.get(status, icons.tmux) if status else ""
 
+        monitor_icons_all = [e.monitor_icons for e in entries if e.monitor_icons]
+        monitor_icon = monitor_icons_all[0] if len(monitor_icons_all) == 1 else "".join(monitor_icons_all)
+
         return _WorkspaceParts(
             display_name=display_name,
             agent_icon=agent_icon,
+            monitor_icon=monitor_icon,
             tmux_sessions="|".join(session_names),
             app_icons=app_icons_str,
         )
@@ -256,6 +261,7 @@ def build_workspaces(
             agent_status=status,
             is_active=acc.is_active,
             agent_icon=parts.agent_icon,
+            monitor_icon=parts.monitor_icon,
             tmux_sessions=parts.tmux_sessions,
             app_icons=parts.app_icons,
         ))

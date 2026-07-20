@@ -60,6 +60,7 @@ class SketchyBar:
                 "id": ws.id,
                 "display_name": label,
                 "agent_icon": ws.agent_icon,
+                "monitor_icon": ws.monitor_icon,
                 "tmux_sessions": ws.tmux_sessions,
                 "app_icons": ws.app_icons,
                 "agent_status": ws.agent_status,
