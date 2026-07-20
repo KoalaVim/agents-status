@@ -92,20 +92,54 @@ slack = ""                   # Slack window
 
 ```toml
 [statusbar.sketchybar]
-space_item_prefix = "space"                                        # Prefix for sketchybar space item names
-label_template = "{id} {agent_icon} {tmux_sessions} [{window_count}]"  # Workspace label template
+space_item_prefix = "space"                                                          # Prefix for sketchybar space item names
+label_template = "{app_icons} {agent_icon} {monitor_icon} {tmux_sessions} [{window_count}]"  # Workspace label template
 ```
 
 #### Template variables
 
 | Variable | Source | Description |
 |----------|--------|-------------|
-| `{id}` | aerospace.sh | Workspace number |
+| `{id}` | plugin.sh | Workspace number |
 | `{agent_icon}` | agents-status | Agent status icon (from tmux) |
+| `{monitor_icon}` | agents-status | Monitor status icon (from tmux-notify) |
 | `{tmux_sessions}` | agents-status | Tmux session names joined with `\|` |
 | `{app_icons}` | agents-status | Browser/Slack icons |
 | `{agent_label}` | agents-status | Full computed display name |
-| `{window_count}` | aerospace.sh | Live window count from aerospace |
+| `{window_count}` | plugin.sh | Live window count from aerospace |
+
+#### Default workspace colors
+
+Colors applied to workspaces without an active agent status. Set these to match your color scheme:
+
+```toml
+[statusbar.sketchybar.colors]
+default_bg_focused = "0xffcba6f7"    # Focused workspace background
+default_bg_unfocused = "0xff23243e"  # Unfocused workspace background
+default_text_focused = "0xff1e1e1e"  # Focused workspace text
+default_text_unfocused = "0xffa287c5" # Unfocused workspace text
+```
+
+#### Sketchybar plugin setup
+
+This repo ships a ready-to-use sketchybar plugin at `statusbar/sketchybar/plugin.sh`. Point your `sketchybarrc` directly at it:
+
+```bash
+script="~/agents-status/statusbar/sketchybar/plugin.sh $sid"
+```
+
+Or create a one-line wrapper in `~/.config/sketchybar/plugins/`:
+
+```bash
+#!/bin/bash
+exec ~/agents-status/statusbar/sketchybar/plugin.sh "$@"
+```
+
+The plugin reads a workspace cache at `/tmp/aerospace-ws-cache` for window counts. Update the cache from your AeroSpace `exec-on-workspace-change` hook:
+
+```bash
+~/agents-status/statusbar/sketchybar/update-ws-cache.sh
+```
 
 ## Requirements
 
@@ -119,7 +153,7 @@ label_template = "{id} {agent_icon} {tmux_sessions} [{window_count}]"  # Workspa
 
 - [AeroSpace](https://github.com/nikitabobko/AeroSpace) window manager
 - [sketchybar](https://github.com/FelixKratz/SketchyBar)
-- `tmux`, `python3`
+- `jq`, `tmux`, `python3`
 - A [Nerd Font](https://www.nerdfonts.com/) for status icons
 
 ## Adding a New Provider

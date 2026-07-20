@@ -38,6 +38,10 @@ class SketchyBar:
         self._bg_colors = _bg_colors(config.colors)
         self._text_focused = config.colors.text_focused
         self._text_unfocused = config.colors.text_unfocused
+        self._default_bg_focused = config.colors.default_bg_focused
+        self._default_bg_unfocused = config.colors.default_bg_unfocused
+        self._default_text_focused = config.colors.default_text_focused
+        self._default_text_unfocused = config.colors.default_text_unfocused
         resolved = (colors or ColorsConfig()).resolved()
         self._status_colors = {
             k.upper(): _hex_to_sketchybar(v) for k, v in resolved.items()
@@ -98,8 +102,15 @@ class SketchyBar:
 
     def _write_sentinel(self, entries: list[dict]) -> None:
         try:
+            header = {
+                "template": self._template,
+                "default_bg_focused": self._default_bg_focused,
+                "default_bg_unfocused": self._default_bg_unfocused,
+                "default_text_focused": self._default_text_focused,
+                "default_text_unfocused": self._default_text_unfocused,
+            }
             with open(SENTINEL_PATH, "w") as f:
-                f.write(json.dumps({"template": self._template}) + "\n")
+                f.write(json.dumps(header) + "\n")
                 for entry in entries:
                     f.write(json.dumps(entry) + "\n")
         except OSError as e:

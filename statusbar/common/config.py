@@ -100,6 +100,10 @@ class SketchybarColorsConfig:
     done_unfocused: str = ""
     text_focused: str = "0xff1e1e1e"
     text_unfocused: str = "0xff000000"
+    default_bg_focused: str = "0xff444444"
+    default_bg_unfocused: str = "0xff222222"
+    default_text_focused: str = "0xffffffff"
+    default_text_unfocused: str = "0xffaaaaaa"
 
     def apply_global_colors(self, colors: dict[str, str]) -> None:
         """Fill in empty slots from global [colors], converting to sketchybar format."""
